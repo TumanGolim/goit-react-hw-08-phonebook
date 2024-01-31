@@ -1,19 +1,19 @@
-import React, { Suspense, lazy, useEffect } from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
-import Layout from "./layout/Layout";
-import "./store/store";
-import { useDispatch, useSelector } from "react-redux";
-import { profileSelector } from "./store/auth/selectors";
-import { refreshThunk } from "./store/auth/thunks";
-import PublicRoute from "./guards/PublicRoute";
-import Loader from "./components/Loader";
+import React, { Suspense, lazy, useEffect } from 'react';
+import { Route, Routes, Navigate } from 'react-router-dom';
+import Layout from './layout/Layout';
+import './store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { profileSelector } from './store/auth/selectors';
+import { refreshThunk } from './store/auth/thunks';
+import PublicRoute from './guards/PublicRoute';
+import Loader from './components/Loader';
 
-const ProductDetailsPage = lazy(() => import("./pages/ProductDetailsPage"));
-const HomePage = lazy(() => import("./pages/HomePage"));
-const TodoPage = lazy(() => import("./pages/TodoPage"));
-const TodoDetailsPage = lazy(() => import("./pages/TodoDetailsPage"));
-const LoginPage = lazy(() => import("./pages/LoginPage"));
-const RegistrationPage = lazy(() => import("./pages/RegistrationPage"));
+const ProductDetailsPage = lazy(() => import('./pages/ProductDetailsPage'));
+const HomePage = lazy(() => import('./pages/HomePage'));
+const TodoPage = lazy(() => import('./pages/TodoPage'));
+const TodoDetailsPage = lazy(() => import('./pages/TodoDetailsPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const RegistrationPage = lazy(() => import('./pages/RegistrationPage'));
 
 const App = () => {
   const profile = useSelector(profileSelector);
