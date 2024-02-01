@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunkreact_homework_template=self.webpackChunkreact_homework_template||[]).push([[328],{9328:function(e,t,a){a.r(t);var o=a(2791),r=a(7689),c=a(184);t.default=function(){var e=(0,r.UO)().todoId;return(0,o.useEffect)((function(){}),[e]),(0,c.jsx)("div",{children:"TodoDetailsPage"})}}}]);
-//# sourceMappingURL=328.11692a92.chunk.js.map
