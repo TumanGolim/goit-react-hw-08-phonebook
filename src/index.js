@@ -1,18 +1,20 @@
+import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
-import './index.css';
-import { BrowserRouter } from 'react-router-dom';
+import App from 'App.jsx';
+import 'modern-normalize';
 import { Provider } from 'react-redux';
 import { persistor, store } from './store/store';
+import { BrowserRouter } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
 
-const root = document.getElementById('root');
-ReactDOM.createRoot(root).render(
-  <BrowserRouter basename="goit-react-hw-08-phonebook">
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <App />
+        <BrowserRouter basename={process.env.PUBLIC_URL}>
+          <App />
+        </BrowserRouter>
       </PersistGate>
     </Provider>
-  </BrowserRouter>
-);
+  </React.StrictMode>
+)

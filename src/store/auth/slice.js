@@ -1,33 +1,60 @@
-import { createSlice } from '@reduxjs/toolkit'
-import { loginThunk, refreshThunk, signUpThunk } from './thunks'
-import { handleSignUp } from './handlers'
+import { createSlice, isAnyOf } from '@reduxjs/toolkit';
+import {
+  loginThunk,
+  logoutThunk,
+  refreshThunk,
+  registerThunk,
+} from './operations';
 
 const initialState = {
-	token: '',
-	profile: null,
-}
+  user: {
+    name: '',
+    email: '',
+  },
+  token: '',
+  isLoggedIn: false,
+  error: '',
+  loading: false,
+  isRefresh: false,
+};
 
-const authSlice = createSlice({
-	name: 'auth',
-	initialState,
-	reducers: {
-		logout: (state) => {
-			state.token = ''
-			state.profile = null
-		},
-	},
-	extraReducers: (builder) => {
-		builder
-			.addCase(signUpThunk.fulfilled, handleSignUp)
-			.addCase(loginThunk.fulfilled, handleSignUp)
-			.addCase(refreshThunk.fulfilled, handleSignUp)
-			.addCase(refreshThunk.rejected, (state) => {
-				state.token = ''
-				state.profile = null
-				// localStorage.clear()
-			})
-	},
-})
+const slice = createSlice({
+  name: 'auth',
+  initialState,
+  extraReducers: builder => {
+    builder
 
-export const authReducer = authSlice.reducer
-export const { logout } = authSlice.actions
+      .addCase(logoutThunk.fulfilled, (state, { payload }) => {
+        return (state = initialState);
+      })
+      .addCase(refreshThunk.pending, (state, { payload }) => {
+        state.isRefresh = true;
+      })
+      .addCase(refreshThunk.rejected, (state, { payload }) => {
+        state.isRefresh = false;
+      })
+      .addCase(refreshThunk.fulfilled, (state, { payload }) => {
+        state.user.name = payload.name;
+        state.user.email = payload.email;
+        state.isLoggedIn = true;
+        state.isRefresh = false;
+      })
+      .addMatcher(
+        isAnyOf(registerThunk.pending, loginThunk.pending),
+        (state, { payload }) => {
+          state.loading = true;
+        }
+      )
+      .addMatcher(
+        isAnyOf(registerThunk.fulfilled, loginThunk.fulfilled),
+        (state, { payload }) => {
+          state.user = payload.user;
+          state.token = payload.token;
+          state.loading = false;
+          state.isLoggedIn = true;
+        }
+      );
+  },
+});
+
+export const authReducer = slice.reducer;

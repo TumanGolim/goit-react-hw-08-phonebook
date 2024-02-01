@@ -1,31 +1,39 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { counterReducer } from './counterToolkit/counterReducer';
-import { todoReducer } from './todoWithSlice/sliceTodo';
-
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import { productsReducer } from './products/slice';
-import { postsReducer } from './posts/slice';
+import { phoneBookReducer } from './contacts/slice';
 import { authReducer } from './auth/slice';
-import { rootReducer } from './root/slice';
+
+import { configureStore } from '@reduxjs/toolkit';
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 
 const persistConfig = {
-  key: 'todo',
+  key: 'root',
+  version: 1,
   storage,
   whitelist: ['token'],
 };
 
 const persistedReducer = persistReducer(persistConfig, authReducer);
 
-const reducer = {
-  counter: counterReducer,
-  todo: todoReducer,
-  products: productsReducer,
-  posts: postsReducer,
-  auth: persistedReducer,
-  root: rootReducer,
-};
-
-export const store = configureStore({ reducer });
-
+export const store = configureStore({
+  reducer: {
+    phoneBook: phoneBookReducer,
+    auth: persistedReducer,
+  },
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
+  devTools: process.env.NODE_ENV !== 'production',
+});
 export const persistor = persistStore(store);

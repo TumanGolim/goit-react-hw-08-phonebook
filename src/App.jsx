@@ -1,80 +1,41 @@
-import React, { Suspense, lazy, useEffect } from 'react';
-import { Route, Routes, Navigate } from 'react-router-dom';
-import Layout from './layout/Layout';
-import './store/store';
+import { Route, Routes } from 'react-router-dom';
+import Contacts from 'pages/Contacts';
+import NotFoundPage from 'pages/NotFoundPage';
+import { Login } from 'pages/Login';
+import { Register } from 'pages/Register';
+import Layout from 'components/Layout/Layout';
+import { PrivateRoute } from 'components/Routes/PrivateRoute';
 import { useDispatch, useSelector } from 'react-redux';
-import { profileSelector } from './store/auth/selectors';
-import { refreshThunk } from './store/auth/thunks';
-import PublicRoute from './guards/PublicRoute';
-import Loader from './components/Loader';
-
-const ProductDetailsPage = lazy(() => import('./pages/ProductDetailsPage'));
-const HomePage = lazy(() => import('./pages/HomePage'));
-const TodoPage = lazy(() => import('./pages/TodoPage'));
-const TodoDetailsPage = lazy(() => import('./pages/TodoDetailsPage'));
-const LoginPage = lazy(() => import('./pages/LoginPage'));
-const RegistrationPage = lazy(() => import('./pages/RegistrationPage'));
+import { useEffect } from 'react';
+import { refreshThunk } from 'store/auth/operations';
+import { selectIsRefresh } from 'store/auth/selectors';
 
 const App = () => {
-  const profile = useSelector(profileSelector);
   const dispatch = useDispatch();
-
+  const isRefresh = useSelector(selectIsRefresh);
   useEffect(() => {
-    !profile && dispatch(refreshThunk());
-  }, [dispatch, profile]);
-
-  const isAuthenticated = !!profile;
-
-  return (
+    dispatch(refreshThunk());
+  }, [dispatch]);
+  return isRefresh ? (
+    <h2>Loading...</h2>
+  ) : (
     <>
-      <Loader />
-      <Suspense fallback={<>loading...</>}>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<HomePage />} />
-
-            {isAuthenticated ? (
-              <Route path="todo" element={<TodoPage />} />
-            ) : (
-              <Route
-                path="todo"
-                element={<Navigate to="/registration" replace />}
-              />
-            )}
-
-            <Route
-              path="products/:productId"
-              element={<ProductDetailsPage />}
-            />
-
-            {isAuthenticated ? (
-              <Route path="todo/:todoId" element={<TodoDetailsPage />} />
-            ) : (
-              <Route
-                path="todo/:todoId"
-                element={<Navigate to="/registration" replace />}
-              />
-            )}
-          </Route>
+      <Routes>
+        <Route path="/" element={<Layout />}>
           <Route
-            path="/login"
+            index
             element={
-              <PublicRoute>
-                <LoginPage />
-              </PublicRoute>
+              <PrivateRoute>
+                <Contacts />
+              </PrivateRoute>
             }
           />
-          <Route
-            path="/registration"
-            element={
-              <PublicRoute>
-                <RegistrationPage />
-              </PublicRoute>
-            }
-          />
-          <Route path="*" element={<h1>404</h1>} />
-        </Routes>
-      </Suspense>
+          ;
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+        </Route>
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
     </>
   );
 };
